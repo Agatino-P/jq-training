@@ -1,0 +1,6 @@
+[
+  {"first":"Ada","last":"Lovelace","age":36,"active":true,"tags":["math","poetry"]},
+  {"first":"Alan","last":"Turing","age":41,"active":true,"tags":["math","crypto"]},
+  {"first":"Grace","last":"Hopper","age":85,"active":false,"tags":["navy","compilers"]},
+  {"first":"Katherine","last":"Johnson","age":101,"active":false,"tags":["math","nasa"]}
+]
