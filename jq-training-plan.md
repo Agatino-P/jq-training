@@ -9,10 +9,14 @@
 ## How we use this doc
 
 - Each module has a **status**, a short **goal**, the **manual section** it maps to, and **exercises**.
+- **Always pause for questions before handing over exercises.** Teach → ask "any questions?" → only then give exercises.
+- **After any divergence (a question or side-thread), once it's sorted, re-present the whole thing in full** — the lesson recap, question prompt, or exercises — so nothing has to be scrolled back for. Never resume with just a pointer like "back to where we were."
 - Status legend: `[ ]` not started · `[~]` in progress · `[x]` done · `[!]` needs review
-- After each session I (Claude) update statuses and drop notes into **Things to keep** at the bottom.
+- After each session I (Claude) update statuses and drop gotchas into **`cheatsheet.md`** ("Things to keep").
 - When something is out of scope but worth remembering, it goes in **Parked (revisit later)** — we don't rabbit-hole.
 - Exercises live in `exercises/` and sample data in `data/`. Scratch answers go in `scratch/`.
+- **`lessons.md`** = condensed study notes, one section per module (distilled teaching, not the chat). Update it as each module finishes.
+- **`cheatsheet.md`** = "Things to keep": gotchas, one-liners, aha moments. Update it as we hit them.
 
 ---
 
@@ -30,13 +34,13 @@ Keep asking: *"how many values is this producing?"*
 
 ## Modules
 
-### Module 0 — Setup & how to run jq  `[ ]`
+### Module 0 — Setup & how to run jq  `[x]`
 - **Goal:** run jq confidently from the terminal; know the 5 flags that matter.
 - **Manual:** Invoking jq
 - **Must-know flags:** `-r` (raw output), `-c` (compact), `-s` (slurp), `-n` (null input), `--arg`/`--argjson` (pass values in).
 - **Exercise:** pipe a JSON file through `jq '.'`; try `-r` vs without on a string result.
 
-### Module 1 — Core filters: the backbone  `[ ]`  ⭐ core
+### Module 1 — Core filters: the backbone  `[x]`  ⭐ core
 - **Goal:** identity, indexing, pipe, comma, parentheses — the grammar of everything else.
 - **Manual:** Basic filters
 - **Cover:** `.`, `.foo`, `.foo.bar`, `.foo?`, `.["key"]`, `.[0]`, `.[2:4]` (slices), `.[]` (iterate), `,` (multiple outputs), `|` (pipe), `( )` grouping.
@@ -121,16 +125,10 @@ Keep asking: *"how many values is this producing?"*
 
 ---
 
-## Things to keep (personal cheat sheet — filled in as we go)
-
-_Gotchas, one-liners, and "aha" moments land here. Empty for now._
-
-- 
-
----
-
 ## Progress log
 
 | Date | Module(s) | What we did | Next up |
 |------|-----------|-------------|---------|
 | 2026-07-17 | setup | Created plan, folder, verified jq 1.8.1 | Module 0/1 |
+| 2026-07-27 | 0 | Ran jq, 5 flags, `-r`/`-c`/`-s`/`-n`; nailed identity vs slurp & NDJSON-as-stream | Module 1 |
+| 2026-07-27 | 1 | Core filters: `.`, indexing, brackets, slices, `.[]`, `,`, `|`, `()`, `?`; got `.[]` (N outputs) vs slice (1 array) | Module 2 |
