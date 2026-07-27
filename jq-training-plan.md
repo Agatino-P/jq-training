@@ -59,7 +59,7 @@ Keep asking: *"how many values is this producing?"*
 - **Cover:** `[ ... ]`, `{ ... }`, shorthand `{name, age}`, computed keys `{(.k): .v}`, `"\(.expr)"` interpolation.
 - **Exercise:** reshape `{first,last,age}` into `{name:"first last", age}`.
 
-### Module 4 — select / map / map_values  `[ ]`  ⭐ core
+### Module 4 — select / map / map_values  `[x]`  ⭐ core
 - **Goal:** filter and transform collections — the daily-driver trio.
 - **Manual:** Builtin functions
 - **Cover:** `select(cond)`, `map(f)`, `map_values(f)`, and why `map(f)` == `[.[] | f]`.
@@ -135,3 +135,4 @@ Keep asking: *"how many values is this producing?"*
 | 2026-07-27 | 1 | Core filters: `.`, indexing, brackets, slices, `.[]`, `,`, `|`, `()`, `?`; got `.[]` (N outputs) vs slice (1 array) | Module 2 |
 | 2026-07-27 | 2 | Stream model (2a explode `.[]`, 2b pipe = per-value, 2c `[ ]` collect N→1); explode→transform→collect idiom | Module 3 |
 | 2026-07-27 | 3 | Building output (3a `{}` + shorthand, 3b `"\(.expr)"` interp, 3c `[]` + computed keys `{(.k):.v}`) | Module 4 |
+| 2026-07-27 | 4 | select/map/map_values (4a gate+stream-filter, 4b `map`==`[.[]|f]`, 4c values-in-place); N-vs-1 choice | Module 5 |

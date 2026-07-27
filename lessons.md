@@ -81,3 +81,22 @@ From extracting to *constructing* new JSON.
 **3c — array construction `[ ]` + computed keys.**
 - `[.first, .last, .age]` → `["Ada","Lovelace",36]` (same N→1 collection as 2c; commas make the stream).
 - Computed key: wrap the key filter in `( )` → `{(.first): .age}` → `{"Ada":36}`. Without parens the key is the literal string. Key expression must produce a string.
+
+---
+
+## Module 4 — select / map / map_values ⭐
+
+The daily-driver trio.
+
+**4a — `select(cond)`: keep or drop.** If `cond` is true, passes input through unchanged; if false, outputs *nothing*. 1 in → 1-or-0 out.
+- Over a stream it filters: `.[] | select(.active == true)` → only matching objects. Wrap in `[ ]` for one array.
+
+**4b — `map(f)`: transform an array.** Input array → run `f` on each element → output array (same length).
+- `map(f)` **==** `[ .[] | f ]` — the named 2c idiom. `map` explodes + re-collects for you.
+- `echo '[1,2,3]' | jq 'map(.+10)'` → `[11,12,13]`.
+- Array-filter idiom: `map(select(cond))` → `echo '[1,2,3,4]' | jq 'map(select(.%2==0))'` → `[2,4]`.
+- N-vs-1 choice: `.[] | select` = stream; `map(select(...))` = one array. Same condition, your call.
+
+**4c — `map_values(f)`: transform values in place.** Keeps the object's keys/structure, transforms each value.
+- `{"a":1,"b":2} | map_values(.+10)` → `{"a":11,"b":12}` (keys kept). Contrast `map(f)` on an object → array, keys lost.
+- Gotcha: if `f` outputs *empty* for a key (e.g. a failing `select`), that key is **deleted**. So `map_values(select(cond))` drops entries.
