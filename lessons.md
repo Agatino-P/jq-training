@@ -45,3 +45,21 @@ Six-ish pieces; everything later is combinations of these.
 - **`?` safety valve** — `.foo?` suppresses the error if the path doesn't apply, producing *nothing* instead of failing.
 
 Through-line: `.[]` and `,` **create** streams (many outputs); `|` **maps** over a stream; everything else is single-step navigation. Always ask: *"how many values is this producing?"*
+
+---
+
+## Module 2 — Iteration & the stream model ⭐
+
+One question runs through everything: *"how many values are flowing right now?"*
+
+**2a — `.[]` explodes a collection into a stream.** Emits each element as a *separate output*, not an array.
+- On arrays: each element. On objects: each *value*, keys dropped.
+- `{"a":1,"b":2,"c":3} → .[]` → `1, 2, 3` (three outputs).
+
+**2b — a stream is N separate outputs; `|` runs the next filter once per value.**
+- `.[] | .first` → 4 outputs; the pipe is a silent "for each." Count doesn't change by piping: `.[] | .first` == `.[].first`.
+
+**2c — `[ ... ]` re-collects a stream into one array** (inverse of `.[]`).
+- `.[].age` = 4 outputs; `[ .[].age ]` = 1 output `[36,41,85,101]`. `.[]` collapses 1→N, `[ ]` collapses N→1.
+- Everyday idiom **explode→transform→collect**: `[ .[] | .first | ascii_upcase ]`. This shape *is* `map(...)` (Module 4).
+- Trap: `[ ]` collects *outputs*. Wrapping an already-single value double-wraps: `[ .[0:2] ]` → `[[ ... ]]`.

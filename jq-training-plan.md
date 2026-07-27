@@ -11,6 +11,7 @@
 - Each module has a **status**, a short **goal**, the **manual section** it maps to, and **exercises**.
 - **Always pause for questions before handing over exercises.** Teach → ask "any questions?" → only then give exercises.
 - **After any divergence (a question or side-thread), once it's sorted, re-present the whole thing in full** — the lesson recap, question prompt, or exercises — so nothing has to be scrolled back for. Never resume with just a pointer like "back to where we were."
+- **Baby steps: whenever a module splits sensibly, split it.** Teach one small sub-topic at a time (question → mini-exercise → next), not the whole module in one dump. Smaller is always better.
 - Status legend: `[ ]` not started · `[~]` in progress · `[x]` done · `[!]` needs review
 - After each session I (Claude) update statuses and drop gotchas into **`cheatsheet.md`** ("Things to keep").
 - When something is out of scope but worth remembering, it goes in **Parked (revisit later)** — we don't rabbit-hole.
@@ -46,7 +47,7 @@ Keep asking: *"how many values is this producing?"*
 - **Cover:** `.`, `.foo`, `.foo.bar`, `.foo?`, `.["key"]`, `.[0]`, `.[2:4]` (slices), `.[]` (iterate), `,` (multiple outputs), `|` (pipe), `( )` grouping.
 - **Exercise:** from a sample object, pull two fields at once with `,`; chain `.a.b.c`; slice an array.
 
-### Module 2 — Iteration & the stream model  `[ ]`  ⭐ core
+### Module 2 — Iteration & the stream model  `[x]`  ⭐ core
 - **Goal:** truly *get* `.[]` and how many outputs a filter makes. This is the make-or-break concept.
 - **Manual:** Basic filters (Value Iterator) + Types
 - **Cover:** `.[]` over arrays vs objects; how `.[] | ...` maps over a stream; `[ ... ]` to re-collect a stream into an array.
@@ -132,3 +133,4 @@ Keep asking: *"how many values is this producing?"*
 | 2026-07-17 | setup | Created plan, folder, verified jq 1.8.1 | Module 0/1 |
 | 2026-07-27 | 0 | Ran jq, 5 flags, `-r`/`-c`/`-s`/`-n`; nailed identity vs slurp & NDJSON-as-stream | Module 1 |
 | 2026-07-27 | 1 | Core filters: `.`, indexing, brackets, slices, `.[]`, `,`, `|`, `()`, `?`; got `.[]` (N outputs) vs slice (1 array) | Module 2 |
+| 2026-07-27 | 2 | Stream model (2a explode `.[]`, 2b pipe = per-value, 2c `[ ]` collect N→1); explode→transform→collect idiom | Module 3 |
