@@ -99,4 +99,7 @@ The daily-driver trio.
 
 **4c — `map_values(f)`: transform values in place.** Keeps the object's keys/structure, transforms each value.
 - `{"a":1,"b":2} | map_values(.+10)` → `{"a":11,"b":12}` (keys kept). Contrast `map(f)` on an object → array, keys lost.
-- Gotcha: if `f` outputs *empty* for a key (e.g. a failing `select`), that key is **deleted**. So `map_values(select(cond))` drops entries.
+- Gotcha: if `f` outputs *empty* for a key, that key is **deleted**. A failing `select` yields empty → `map_values(select(cond))` drops entries. Returning any value (even `0`) keeps the key.
+- **`if` gotcha:** `if C then T end` with no `else` defaults the else to **`.` (identity)**, NOT empty. So `if . >= 50 then . end` keeps the value unchanged on false — it does NOT delete. To delete via `if`, write `else empty` explicitly:
+  - `map_values(if . >= 50 then . else empty end)` on `{"ada":90,"alan":40}` → `{"ada":90}` (alan deleted).
+  - Two clean ways to delete object entries by condition: `map_values(select(cond))` or `map_values(if cond then . else empty end)`.
