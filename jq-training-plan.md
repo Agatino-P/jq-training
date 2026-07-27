@@ -53,7 +53,7 @@ Keep asking: *"how many values is this producing?"*
 - **Cover:** `.[]` over arrays vs objects; how `.[] | ...` maps over a stream; `[ ... ]` to re-collect a stream into an array.
 - **Exercise:** iterate an array of objects, extract one field from each; then wrap it back into an array.
 
-### Module 3 — Building output  `[ ]`  ⭐ core
+### Module 3 — Building output  `[x]`  ⭐ core
 - **Goal:** construct new JSON shapes, not just extract.
 - **Manual:** Types and Values (Array/Object construction) + String interpolation
 - **Cover:** `[ ... ]`, `{ ... }`, shorthand `{name, age}`, computed keys `{(.k): .v}`, `"\(.expr)"` interpolation.
@@ -134,3 +134,4 @@ Keep asking: *"how many values is this producing?"*
 | 2026-07-27 | 0 | Ran jq, 5 flags, `-r`/`-c`/`-s`/`-n`; nailed identity vs slurp & NDJSON-as-stream | Module 1 |
 | 2026-07-27 | 1 | Core filters: `.`, indexing, brackets, slices, `.[]`, `,`, `|`, `()`, `?`; got `.[]` (N outputs) vs slice (1 array) | Module 2 |
 | 2026-07-27 | 2 | Stream model (2a explode `.[]`, 2b pipe = per-value, 2c `[ ]` collect N→1); explode→transform→collect idiom | Module 3 |
+| 2026-07-27 | 3 | Building output (3a `{}` + shorthand, 3b `"\(.expr)"` interp, 3c `[]` + computed keys `{(.k):.v}`) | Module 4 |

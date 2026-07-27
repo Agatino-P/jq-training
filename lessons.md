@@ -63,3 +63,21 @@ One question runs through everything: *"how many values are flowing right now?"*
 - `.[].age` = 4 outputs; `[ .[].age ]` = 1 output `[36,41,85,101]`. `.[]` collapses 1→N, `[ ]` collapses N→1.
 - Everyday idiom **explode→transform→collect**: `[ .[] | .first | ascii_upcase ]`. This shape *is* `map(...)` (Module 4).
 - Trap: `[ ]` collects *outputs*. Wrapping an already-single value double-wraps: `[ .[0:2] ]` → `[[ ... ]]`.
+
+---
+
+## Module 3 — Building output ⭐
+
+From extracting to *constructing* new JSON.
+
+**3a — object construction `{ }`.** Inside braces, `key: filter`; the filter runs against the input and its output becomes the value.
+- `{name: .first, years: .age}` → `{"name":"Ada","years":36}`.
+- Shorthand `{first, age}` == `{first: .first, age: .age}` — plucks a subset of fields.
+
+**3b — string interpolation `"\(.expr)"`.** Inside a string literal, `\( ... )` evaluates a filter and splices its result into the text.
+- `"\(.first) \(.last) is \(.age)"` → `Ada Lovelace is 36` (with `-r`).
+- Non-strings auto-convert inside interpolation (no `tostring`). Text outside `\( )` is literal — you can nest inside literal parens: `"\(.last), \(.first) (\(.age))"`.
+
+**3c — array construction `[ ]` + computed keys.**
+- `[.first, .last, .age]` → `["Ada","Lovelace",36]` (same N→1 collection as 2c; commas make the stream).
+- Computed key: wrap the key filter in `( )` → `{(.first): .age}` → `{"Ada":36}`. Without parens the key is the literal string. Key expression must produce a string.
