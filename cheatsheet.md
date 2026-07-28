@@ -49,7 +49,7 @@ select(.count)                       → does NOT skip zeros; say select(.count 
 
 **`not` is a filter, not an operator — pipe into it**
 ```
-.vip | not                      → negated       (`not .vip` = syntax error)
+.vip | not                      → negated       (`not .vip` fails at runtime — not is a filter, pipe into it)
 ```
 
 **`//` swallows `false` — never default booleans with it**

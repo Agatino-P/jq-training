@@ -8,6 +8,8 @@
 
 ## The big picture (read this first — everything else fits into it)
 
+*(This overview freely uses filters taught later — `select` M4, comparisons M6, `sort_by` M5 — just absorb the shape.)*
+
 ```
                  ┌──────────── the real work ────────────┐
 input values ──→ explode? ──→ per-element filters ──→ collect? ──→ output
@@ -209,6 +211,8 @@ Without parens the key is the literal string. Key expression must produce a stri
 
 ## Module 4 — select / map / map_values ⭐
 
+*(Examples use comparisons `>`, `==`, `%`, and one `if/else` — formally covered in Module 6; they read as expected.)*
+
 **4a — `select(cond)`: keep or drop**
 ```
 value | select(cond)            → value if cond true, ELSE NOTHING (empty)
@@ -361,7 +365,7 @@ Inside `f`, `.` is one `{key, value}` pair — so keys are editable too (which `
 ```
 {"a":1,"b":2} | with_entries(.key |= ascii_upcase)   → {"A":1,"B":2}
 ```
-(`|=` = update-in-place, Module 8; `ascii_upcase` = uppercase, Module 9.)
+(`|=` = update-in-place and `+=` = add-in-place, Module 8; `ascii_upcase` = uppercase, Module 9.)
 `select` inside drops the pair (same empty-deletes rule as 4c):
 ```
 {"a":1,"b":25} | with_entries(select(.value > 10))   → {"b":25}
@@ -395,7 +399,7 @@ cond1 and cond2                 → true/false (truthiness rule above)
 `and`/`or` return only true/false — they never hand back an operand (defaults are `//`'s job).
 ```
 cond | not                      → negated — not is a FILTER, you pipe into it
-{"vip":false} | .vip | not      → true       (`not .vip` is a syntax error)
+{"vip":false} | .vip | not      → true       (`not .vip` parses but errors at runtime — it indexes the boolean)
 ```
 Comparisons bind tighter than `and`/`or`; parenthesize when in doubt.
 
@@ -440,7 +444,7 @@ try EXPR catch HANDLER          → EXPR, or HANDLER(error-message-string)
 ```
 `try EXPR` alone ≡ `EXPR?`. Inside `catch`, `.` = the error message: `catch "oops: \(.)"`.
 Choosing on a dirty stream: `?` = drop bad records silently · `try/catch` = replace them (keep row count / log why) · naked = fail loudly (right when an error means your assumption broke).
-Scope: `?` guards the whole postfix chain it ends (`.a.b[]?`); `try` guards exactly what you give it.
+Scope: `?` guards only the **last** operation in the chain — `.a.b[]?` guards just the `[]`; if `.b` fails first it still errors (`42 | .a.b[]?` → error on `.a`). To guard a whole chain, parenthesize (`(.a.b[])?`) or use `try (.a.b[])`.
 
 ---
 
@@ -504,4 +508,4 @@ string | startswith("s")        → true/false
 ```
 Prefer over `test` for plain prefix/suffix — nothing to escape, no dot surprises.
 
-**Parked:** `capture("(?<n>re)")` pulls named groups into an object — `"v1.29" | capture("v(?<maj>\\d+)")` → `{"maj":"29"}`. Learn on demand; also `sub`/`gsub` (replace), `match` internals, trim fns.
+**Parked:** `capture("(?<n>re)")` pulls named groups into an object — `"v1.29" | capture("v(?<maj>\\d+)\\.(?<min>\\d+)")` → `{"maj":"1","min":"29"}`. Learn on demand; also `sub`/`gsub` (replace), `match` internals, trim fns.

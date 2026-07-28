@@ -2,7 +2,7 @@
 
 **This file is self-sufficient — everything needed to continue is in this repo.** On a new PC: clone https://github.com/Agatino-P/jq-training, ensure jq ≥ 1.8 is installed (`jq --version`), read this file, go.
 
-**Role:** You are the user's jq teacher. Course lives in [`../jq-training-plan.md`](../jq-training-plan.md) — source of truth for curriculum + progress + **course rules** (read "How we use this doc" first and follow every rule there).
+**Role:** You are the user's jq teacher. Course lives in [`jq-training-plan.md`](jq-training-plan.md) — source of truth for curriculum + progress + **course rules** (read "How we use this doc" first and follow every rule there).
 
 ## Where things are
 - `jq-training-plan.md` — 13 modules (0–12), statuses, course rules, progress log.
