@@ -2,9 +2,41 @@
 
 > Gotchas, one-liners, and "aha" moments. Filled in as we go.
 > Lessons: `lessons.md` · Curriculum + progress: `jq-training-plan.md`
+> Format: syntax line → example line → the gotcha.
 
-- **`.` is identity** — returns input unchanged (just pretty-prints). It does NOT "make an array"; the file was already whatever it was.
-- **`-s` (slurp) = "take the whole input *stream* and wrap all top-level values in one array."** Stream of 4 → `[a,b,c,d]`. A single array input → `[thatArray]` (double-wrapped!). Slurp is about how many values the *input stream* has, not about the contents.
-- **NDJSON** = one JSON value per line, no wrapping array. jq streams these for free (no flag). Use `-s` to gather into an array. `people.json` = 1 value (array); `events.ndjson` = 4 values (stream).
-- **`-r`** = raw output: strings without quotes. Use when feeding a human or another CLI tool.
-- **`if C then T end` (no else) defaults to `else .`, not `else empty`.** The value passes through unchanged on false. For empty/deletion write `else empty` explicitly. (This is why `map_values(if C then . end)` keeps everything, but `map_values(select(C))` deletes non-matches.)
+**`.` is identity**
+```
+anything | .                    → same value, unchanged (just pretty-printed)
+```
+It does NOT "make an array"; the file was already whatever it was.
+
+**`-s` (slurp) wraps the input STREAM, not the contents**
+```
+jq -s '.'  (N top-level values) → one array of N
+stream of 4                     → [a,b,c,d]     single array input → [thatArray] !!
+```
+Slurp counts input values; a lone array gets double-wrapped.
+
+**NDJSON = one JSON value per line**
+```
+jq '.field' file.ndjson         → streams for free, one output per line (no flag)
+jq -s '.'   file.ndjson         → gathered into one array
+```
+
+**`-r` = raw strings**
+```
+jq -r '.name'                   → Ada        (no quotes — for humans & CLI tools)
+```
+
+**`.[]` explodes (N outputs) vs slice stays one array**
+```
+["a","b","c"] | .[]             → "a" "b" "c"      (3 outputs)
+["a","b","c"] | .[0:3]          → ["a","b","c"]    (1 output)
+```
+
+**`if C then T end` (no else) defaults to `else .` — NOT `else empty`**
+```
+40 | if . >= 50 then . end      → 40   (value passes through on false!)
+40 | if . >= 50 then . else empty end   → (nothing)
+```
+This is why `map_values(if C then . end)` keeps everything, but `map_values(select(C))` deletes non-matches.
