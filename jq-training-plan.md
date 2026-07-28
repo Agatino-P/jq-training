@@ -96,7 +96,7 @@ input values ──→ explode? (.[]) ──→ per-element filters ──→ co
 - **Done:** `.a = v`, `.a |= f`, `+=`/`//=` sugar, `=` vs `==`, `=` (RHS sees whole doc) vs `|=` (RHS sees old value).
 - **Parked** (deep-path editing — not needed for read-only kubectl use): `.a.b[].c |= f`, `select`-in-path conditional updates, `del(.a)`.
 
-### Module 9 — Strings & regex, kubectl-lite  `[ ]`
+### Module 9 — Strings & regex, kubectl-lite  `[x]`
 - **Goal:** the "grep verb" for JSON: regex filtering + the string ops that show up in pipelines.
 - **Manual:** String functions + Regular expressions
 - **Cover (one bite):** `test("re")` in `select`, `split`/`join`, `startswith`/`endswith`; mention `capture` exists.
@@ -142,3 +142,4 @@ input values ──→ explode? (.[]) ──→ per-element filters ──→ co
 | 2026-07-28 | 5 | Builtins: 5a length/keys/has, 5b add/flatten/range, 5c sort_by family, 5d group_by+count recipe, 5e entries family; big-picture pipeline diagram added | Module 6 |
 | 2026-07-28 | 6 | 6a comparisons/truthiness, 6b and/or/not, 6c if/elif, 6d `//` (+boolean trap), 6e `?`/try-catch. All core modules done | Module 7 (compressed) |
 | 2026-07-28 | 8a + trim | Assignment basics (`=`, `|=`, `+=`). Then trimmed course to real use (kubectl querying): parked 7, 8b, 10; 9 → one regex/strings bite; 12 → kubectl capstone | Module 9-lite |
+| 2026-07-28 | 9-lite | test-in-select grep move, split/join, startswith/endswith (preferred over regex for prefixes); capture parked | Module 11 |

@@ -469,3 +469,39 @@ Inside the RHS, `.` = current value at that path — so a bare filter works: `.n
 ```
 
 Gotchas: `=` sets, `==` compares — a lone `=` in a `select` rewrites instead of testing. Pipe vs assignment: `.user.name | f` outputs just the field; `.user.name |= f` outputs the whole doc with the field edited.
+
+---
+
+## Module 9-lite — the "grep verb": test, split/join, startswith/endswith
+
+**`test("regex")` — regex match, boolean**
+```
+string | test("re")             → true/false     (flags: test("re";"i") = case-insensitive)
+"nginx-7d4b" | test("^nginx-")  → true
+```
+The grep move — pipe the FIELD into test inside select:
+```
+.[] | select(.field | test("re"))
+[{"name":"nginx-a"},{"name":"redis-x"}] | .[] | select(.name | test("^nginx"))   → {"name":"nginx-a"}
+```
+Regex is PCRE-ish: `^ $ . * + [abc] |` as in grep.
+
+**`split` / `join` — string ↔ array**
+```
+string | split(SEP)             → array of pieces (SEP = plain string, not regex)
+"a,b,c" | split(",")            → ["a","b","c"]
+```
+```
+array | join(SEP)               → one string
+["a","b","c"] | join("-")       → "a-b-c"
+```
+Piece of a structured name: `"nginx-7d4b-x2v" | split("-").[0]` → `"nginx"`. Clean shell output: `[.[].name] | join(",")`.
+
+**`startswith` / `endswith` — no-regex fast path**
+```
+string | startswith("s")        → true/false
+"kube-system" | startswith("kube-")   → true
+```
+Prefer over `test` for plain prefix/suffix — nothing to escape, no dot surprises.
+
+**Parked:** `capture("(?<n>re)")` pulls named groups into an object — `"v1.29" | capture("v(?<maj>\\d+)")` → `{"maj":"29"}`. Learn on demand; also `sub`/`gsub` (replace), `match` internals, trim fns.
