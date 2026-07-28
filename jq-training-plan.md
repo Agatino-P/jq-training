@@ -34,6 +34,15 @@ Three ideas explain almost all of jq:
 
 Keep asking: *"how many values is this producing?"*
 
+The master diagram (full version at the top of `lessons.md`):
+
+```
+input values ──→ explode? (.[]) ──→ per-element filters ──→ collect? ([ ]) ──→ output
+```
+
+> Get values as a stream; work per element; drop to array-land only when an operation
+> needs the whole collection; collect at the end only if the output should be one value.
+
 ---
 
 ## Modules

@@ -6,6 +6,37 @@
 
 ---
 
+## The big picture (read this first — everything else fits into it)
+
+```
+                 ┌──────────── the real work ────────────┐
+input values ──→ explode? ──→ per-element filters ──→ collect? ──→ output
+                  (.[])        (.field, select, …)      ([ ])
+```
+
+> **Get values as a stream; work per element; drop to array-land only when an
+> operation needs the whole collection; collect at the end only if the output
+> should be one value.**
+
+The stream of values is the center of jq. Arrays aren't a mandatory stage — they're a place you enter and leave:
+
+- **Getting in:** one array → `.[]` explodes it. NDJSON → already a stream, nothing to do.
+- **Working:** per-element filters (`.field`, `select`, `"\(...)"`) run once per value — no array exists here.
+- **Array-land, only when needed:** ops that must see all elements at once — `sort_by`, `unique`, `group_by`, `add`, `length`, slices, top-N. That's why `-s` exists (stream → array) and why `map(f)` exists (stay in array-land when you're going right back).
+- **Getting out:** don't collect → stream/NDJSON output (`-c`). Collect with `[ ]` / build `{ }` → one value.
+
+Two contrasting shapes:
+
+```
+# never needs an array: stream in, per-element, stream out
+echo '{"a":1} {"a":2} {"a":3}' | jq -c 'select(.a > 1)'       → {"a":2}  {"a":3}
+
+# needs array-land: a whole-collection op (sort), then back out
+echo '{"a":3} {"a":1} {"a":2}' | jq -s 'sort_by(.a) | .[0]'   → {"a":1}
+```
+
+---
+
 ## Module 0 — Running jq & the 5 flags
 
 ```

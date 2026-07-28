@@ -34,6 +34,13 @@ jq -r '.name'                   → Ada        (no quotes — for humans & CLI t
 ["a","b","c"] | .[0:3]          → ["a","b","c"]    (1 output)
 ```
 
+**The standard pipeline: stream at the center, arrays only when needed**
+```
+input values → explode? (.[]) → per-element filters → collect? ([ ]) → output
+{"a":1}⏎{"a":2} | select(.a>1) → {"a":2}      (NDJSON: already a stream — no -s)
+```
+Per-element work (`.field`, `select`, `"\(...)"`) needs no array. Enter array-land only for whole-collection ops (`sort_by`, `unique`, `group_by`, `add`, `length`, slices, top-N) — that's what `-s` (NDJSON→array) and `map` (stay in array-land) are for. Collect at the end only if the output should be one value.
+
 **`if C then T end` (no else) defaults to `else .` — NOT `else empty`**
 ```
 40 | if . >= 50 then . end      → 40   (value passes through on false!)
