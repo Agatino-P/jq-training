@@ -36,7 +36,11 @@ jq -s '.'   (stream of N values) → one array of N
 ```
 Wraps all *top-level input values* in one array. A single array input → `[thatArray]` (double-wrapped!). It's about how many values the input stream has, not the contents.
 
-**NDJSON** — one JSON value per line, no wrapping array. jq streams these for free (no flag); `-s` gathers them. `people.json` = 1 value (an array); `events.ndjson` = 4 values (a stream).
+**NDJSON** — one JSON value per line, no wrapping array. jq streams these for free (no flag); `-s` gathers them.
+```
+{"u":1}⏎{"u":2}⏎{"u":3}   = 3 values (a stream)   — NDJSON file
+[{"u":1},{"u":2},{"u":3}] = 1 value (an array)    — regular JSON file
+```
 
 ---
 
@@ -117,19 +121,19 @@ object | .[]                    → each VALUE, keys dropped
 **2b — a stream is N separate outputs; `|` runs per value**
 ```
 .[] | f                         → f applied to each element   (N in, N out)
-people | .[] | .first           → "Ada" "Alan" "Grace" "Katherine"
+[{"n":"Ada"},{"n":"Alan"}] | .[] | .n   → "Ada"  "Alan"
 ```
 The pipe is a silent "for each" — count in == count out (for navigation filters).
 
 **2c — `[ ... ]` re-collects a stream**
 ```
 [ stream ]                      → ONE array of all outputs   (N→1)
-people | [ .[].age ]            → [36,41,85,101]
+[{"age":36},{"age":41}] | [ .[].age ]   → [36,41]
 ```
 Inverse of `.[]`. Everyday idiom **explode→transform→collect**:
 ```
 [ .[] | f ]                     → transform each element, back to array
-[ .[] | .first | ascii_upcase ] → ["ADA","ALAN","GRACE","KATHERINE"]
+["ada","alan"] | [ .[] | ascii_upcase ]   → ["ADA","ALAN"]     (ascii_upcase = uppercase; Module 9)
 ```
 This shape *is* `map(f)` (Module 4).
 Trap: `[ ]` collects *outputs* — wrapping an already-single value double-wraps: `[ .[0:2] ]` → `[[...]]`.
@@ -141,29 +145,32 @@ Trap: `[ ]` collects *outputs* — wrapping an already-single value double-wraps
 **3a — object construction `{ }`**
 ```
 input | {key: filter, ...}      → new object
-person | {name: .first, years: .age}  → {"name":"Ada","years":36}
+{"first":"Ada","age":36} | {name: .first, years: .age}   → {"name":"Ada","years":36}
 ```
 Shorthand when key == field name:
 ```
 {first, age}                    == {first: .first, age: .age}
-person | {first, age}           → {"first":"Ada","age":36}
+{"first":"Ada","age":36,"x":9} | {first, age}   → {"first":"Ada","age":36}
 ```
 
 **3b — string interpolation `"\(...)"`**
 ```
 "text \(filter) text"           → string with filter result spliced in
-person | "\(.first) is \(.age)" → "Ada is 36"
+{"first":"Ada","age":36} | "\(.first) is \(.age)"   → "Ada is 36"
 ```
-Non-strings auto-convert (no `tostring`). Text outside `\( )` is literal — literal parens nest fine: `"\(.last), \(.first) (\(.age))"` → `Hopper, Grace (85)`.
+Non-strings auto-convert (numbers just work). Text outside `\( )` is literal — literal parens nest fine:
+```
+{"last":"Hopper","age":85} | "\(.last) (\(.age))"   → "Hopper (85)"
+```
 
 **3c — array construction + computed keys**
 ```
 input | [f, g, ...]             → array from the stream inside
-person | [.first, .age]         → ["Alan",41]
+{"first":"Alan","age":41} | [.first, .age]   → ["Alan",41]
 ```
 ```
 input | {(keyFilter): valueFilter}   → key computed from data
-person | {(.last): .active}     → {"Turing":true}
+{"last":"Turing","active":true} | {(.last): .active}   → {"Turing":true}
 ```
 Without parens the key is the literal string. Key expression must produce a string.
 
@@ -174,12 +181,13 @@ Without parens the key is the literal string. Key expression must produce a stri
 **4a — `select(cond)`: keep or drop**
 ```
 value | select(cond)            → value if cond true, ELSE NOTHING (empty)
-41 | select(. > 40)             → 41        (36 → no output)
+41 | select(. > 40)             → 41
+26 | select(. > 40)             → (no output)
 ```
 Over a stream it filters:
 ```
 .[] | select(cond)              → stream of matching elements
-people | .[] | select(.active)  → Ada, Alan   (2 outputs)
+[{"n":"a","ok":true},{"n":"b","ok":false}] | .[] | select(.ok)   → {"n":"a","ok":true}
 ```
 
 **4b — `map(f)`: transform an array**
@@ -207,8 +215,8 @@ Gotchas:
 - Two clean delete-by-condition idioms: `map_values(select(cond))` or `map_values(if cond then . else empty end)`.
 
 More `select` examples:
-- `.[] | select(has("tags"))` — keep records having a key.
-- `map(select(.age > 50))` — Grace + Katherine as one array.
+- `[{"age":36},{"age":85}] | map(select(.age > 50))` → `[{"age":85}]` — filter, keep as one array.
+- `.[] | select(has("tags"))` — keep records having a key (`has` → taught in 5a).
 
 ---
 
@@ -240,7 +248,8 @@ array | add                     → elements combined with "+" (null for [])
 ```
 The forever-combo — sum a field:
 ```
-map(.age) | add                 → 263
+array-of-objects | map(.f) | add     → total of that field
+[{"age":36},{"age":41}] | map(.age) | add   → 77
 ```
 
 **5b — `flatten`**
@@ -262,8 +271,9 @@ array | sort                    → ascending by natural order
 ```
 ```
 array | sort_by(f)              → sorted by computed key
-people | sort_by(.age)          → youngest → oldest   (sort_by(-.age) for descending)
+[{"n":"b","age":41},{"n":"a","age":36}] | sort_by(.age)   → [{"n":"a",...},{"n":"b",...}]
 ```
+`sort_by(-.age)` for descending.
 
 **5c — `unique` / `unique_by(f)`**
 ```
@@ -275,7 +285,7 @@ array | unique                  → sorted + deduped
 **5c — `min_by(f)` / `max_by(f)`**
 ```
 array | max_by(f)               → the ONE element with the largest key
-people | max_by(.age)           → the Katherine object (101)
+[{"n":"a","age":36},{"n":"b","age":85}] | max_by(.age)   → {"n":"b","age":85}
 ```
 Plain `min`/`max` for arrays of scalars.
 

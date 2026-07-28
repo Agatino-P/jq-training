@@ -13,6 +13,8 @@
 - **After any divergence (a question or side-thread), once it's sorted, re-present the whole thing in full** — the lesson recap, question prompt, or exercises — so nothing has to be scrolled back for. Never resume with just a pointer like "back to where we were."
 - **Baby steps: whenever a module splits sensibly, split it.** Teach one small sub-topic at a time (question → mini-exercise → next), not the whole module in one dump. Smaller is always better.
 - **Note format (lessons + cheatsheet): every concept starts with a syntax line, then an example line**, then prose. E.g. `collection | .[] → stream` / `["a","b"] | .[] → "a" "b"`.
+- **Examples in lessons/cheatsheet must be self-contained**: concrete inline input → output. Never reference `data/` files or placeholders like `person |` — the reader may not have the repo's data.
+- **Never use an untaught builtin silently in an example.** Either use only already-covered material, or gloss it inline with a forward pointer, e.g. `(ascii_upcase = uppercase; Module 9)`.
 - Status legend: `[ ]` not started · `[~]` in progress · `[x]` done · `[!]` needs review
 - After each session I (Claude) update statuses and drop gotchas into **`cheatsheet.md`** ("Things to keep").
 - When something is out of scope but worth remembering, it goes in **Parked (revisit later)** — we don't rabbit-hole.
