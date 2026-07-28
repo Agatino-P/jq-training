@@ -572,4 +572,12 @@ Rule: `inputs` stays cheap only feeding a **stream consumer** (`reduce`, `first(
 
 In practice: kubectl output fits in RAM a thousand times over — use `-s` or the default loop; remember `inputs`+`reduce` exists for the day a multi-GB log doesn't.
 
-Leftovers, one line each: `-j` = `-r` without the trailing newline (park). Shell-glue shapes: `jq -c` per-record NDJSON→NDJSON · `jq -r '.f'` column out · `jq -s 'sort_by(.ts)'` array-land op · `kubectl get pods -o json | jq -r '.items[] | select(...) | .metadata.name'`.
+Leftovers — one line each:
+```
+-j                              → -r without the trailing newline (park it)
+jq -c '{u: .user}' < f.ndjson   → per-record transform: NDJSON in, NDJSON out
+jq -r '.user'      < f.ndjson   → extract a column as clean text
+jq -s 'sort_by(.ts)' < f.ndjson → whole-collection op: gather to array-land first
+kubectl get pods -o json | jq -r '.items[] | select(.status.phase != "Running") | .metadata.name'
+                                → the real-life shape: pipe in, filter, names out
+```
