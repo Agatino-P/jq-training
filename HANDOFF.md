@@ -21,6 +21,7 @@
 - Update lessons.md + plan statuses + progress log per module; commit + push at module end.
 
 ## Status
-- Modules **0–6 done** — all ⭐ core modules complete except 11 (I/O & CLI flags).
-- **Next up: Module 7 — reduce & foreach, COMPRESSED** to its useful 20% (agreed): `reduce` properly, `foreach` only a taste. Module 10 also to be compressed when reached.
+- Modules **0–6 done**, plus **8a** (assignment basics).
+- **Course trimmed 2026-07-28 to the user's real use** — filter/reshape/grep kubectl JSON output, read-only. Parked: 7 (reduce), 8b (deep-path editing), 10 (functions/recursion; `..` is on the cheatsheet). See plan for details.
+- **Remaining (~2 short sessions): Module 9-lite** (one bite: `test` in select, split/join, startswith/endswith) → **Module 11** (I/O & CLI flags ⭐) → **Module 12** (kubectl-style capstone).
 - User is sharp — caught a real error (`if C then T end` defaults to `else .`, NOT empty). Both note files carry the correction.

@@ -441,3 +441,31 @@ try EXPR catch HANDLER          → EXPR, or HANDLER(error-message-string)
 `try EXPR` alone ≡ `EXPR?`. Inside `catch`, `.` = the error message: `catch "oops: \(.)"`.
 Choosing on a dirty stream: `?` = drop bad records silently · `try/catch` = replace them (keep row count / log why) · naked = fail loudly (right when an error means your assumption broke).
 Scope: `?` guards the whole postfix chain it ends (`.a.b[]?`); `try` guards exactly what you give it.
+
+---
+
+## Module 8 — Assignment (8a only; deep-path editing parked as not needed)
+
+jq never mutates — assignment returns a **whole new value with one path changed**.
+
+**`=` — set**
+```
+.path = VALUE                   → whole input, with that path set (missing paths created)
+{"a":1,"b":2} | .a = 99         → {"a":99,"b":2}
+```
+Output is the entire object, not `99`. RHS is evaluated against the **whole input**: `{"n":"ada","up":"XL"} | .n = .up` → `{"n":"XL","up":"XL"}`.
+
+**`|=` — update using the old value**
+```
+.path |= FILTER                 → whole input, path replaced by (old value | FILTER)
+{"n":5} | .n |= . * 2           → {"n":10}
+```
+Inside the RHS, `.` = current value at that path — so a bare filter works: `.n |= ascii_upcase`.
+
+**Sugar:** `.a += x` ≡ `.a |= . + x` (also `-=` `*=` `/=` `//=`):
+```
+{"hits":7} | .hits += 1         → {"hits":8}
+{"name":null} | .name //= "anon"     → {"name":"anon"}   (fill only if null/false)
+```
+
+Gotchas: `=` sets, `==` compares — a lone `=` in a `select` rewrites instead of testing. Pipe vs assignment: `.user.name | f` outputs just the field; `.user.name |= f` outputs the whole doc with the field edited.

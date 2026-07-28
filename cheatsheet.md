@@ -69,6 +69,13 @@ Works in `select`, `sort_by(.ts)`, `min/max_by` — no date parsing needed. Non-
 {} | (.a[]? // "none")          → "none"    (? : error→empty · // : empty→default)
 ```
 
+**`..` — find a key at ANY depth (recursive descent)**
+```
+[.. | .image? // empty]         → all values of "image" anywhere in the document
+{"a":{"image":"x"},"b":[{"image":"y"}]} | [.. | .image? // empty]   → ["x","y"]
+```
+The one Module-10 survivor: handy on deeply nested kubectl/API output.
+
 **`if C then T end` (no else) defaults to `else .` — NOT `else empty`**
 ```
 40 | if . >= 50 then . end      → 40   (value passes through on false!)

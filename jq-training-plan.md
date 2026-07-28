@@ -89,29 +89,21 @@ input values ──→ explode? (.[]) ──→ per-element filters ──→ co
 - **Cover:** `==` `!=` `<` `>`, `and`/`or`/`not`, `if a then b else c end` (and `elif`), the **alternative operator `//`** (default values), `try ... catch`, trailing `?`.
 - **Exercise:** default a missing field to `"unknown"` with `//`; guard a risky index with `?`.
 
-### Module 7 — reduce & foreach  `[ ]`
-- **Goal:** fold a stream into a single accumulated value (sums, counts, custom aggregations).
-- **Manual:** Advanced features
-- **Cover:** `reduce STREAM as $x (init; update)`; a taste of `foreach` for running/intermediate state.
-- **Exercise:** count occurrences of each value into an object with `reduce`.
+### Module 7 — reduce & foreach  `[parked]`
+- Cut 2026-07-28: user's real use (filter/reshape/grep kubectl output) is covered by `group_by`/`add`/`length`. Revisit only if a custom aggregation ever comes up. Syntax reminder: `reduce .[] as $x (init; update)`.
 
-### Module 8 — Assignment & update-in-place  `[ ]`
-- **Goal:** modify JSON at a path — jq's "editing" superpower.
-- **Manual:** Assignment
-- **Cover:** `.a = v`, `.a |= f` (update with function), `+=` etc., path expressions, `del(.a)`, `.a.b[].c |= ...`.
-- **Exercise:** uppercase every `.name` in an array; delete a field; increment a counter.
+### Module 8 — Assignment & update-in-place  `[x]` (8a only; 8b parked)
+- **Done:** `.a = v`, `.a |= f`, `+=`/`//=` sugar, `=` vs `==`, `=` (RHS sees whole doc) vs `|=` (RHS sees old value).
+- **Parked** (deep-path editing — not needed for read-only kubectl use): `.a.b[].c |= f`, `select`-in-path conditional updates, `del(.a)`.
 
-### Module 9 — Strings & regex (practical subset)  `[ ]`
-- **Goal:** the string ops you actually need; a working slice of regex.
+### Module 9 — Strings & regex, kubectl-lite  `[ ]`
+- **Goal:** the "grep verb" for JSON: regex filtering + the string ops that show up in pipelines.
 - **Manual:** String functions + Regular expressions
-- **Cover:** `split`, `join`, `ltrimstr`/`rtrimstr`, `ascii_downcase`/`upcase`, `test`, `match`, `capture` (named groups), `sub`/`gsub`.
-- **Exercise:** split a CSV-ish line; extract a date with a named-capture regex.
+- **Cover (one bite):** `test("re")` in `select`, `split`/`join`, `startswith`/`endswith`; mention `capture` exists.
+- **Cut:** `match` internals, `sub`/`gsub`, trimming functions — learn on demand.
 
-### Module 10 — Variables, functions & recursion  `[ ]`
-- **Goal:** bind values, define reusable filters, walk nested structures.
-- **Manual:** Advanced features + Recursive descent
-- **Cover:** `EXPR as $x | ...`, `{$x}` binding shorthand, `def f: ...;` and `def f(a): ...;`, `..` (recursive descent), `recurse`, `getpath`/`paths`, `walk`.
-- **Exercise:** define a `def average: add/length;`; find all values of a key at any depth with `..`.
+### Module 10 — Variables, functions & recursion  `[parked]`
+- Cut 2026-07-28: not needed for read-only querying. `..` (recursive descent) gets a cheatsheet entry; `as $x` was previewed in Module 7's syntax. `def` et al: revisit if reusable filters ever matter.
 
 ### Module 11 — I/O & the CLI flags that matter  `[ ]`  ⭐ core
 - **Goal:** wire jq into real pipelines: multiple inputs, slurping, passing shell vars, NDJSON.
@@ -119,10 +111,9 @@ input values ──→ explode? (.[]) ──→ per-element filters ──→ co
 - **Cover:** `-s` slurp, `-n` + `inputs`, `--arg`/`--argjson`, `$ENV`/`env`, `-r`/`-j`, handling NDJSON (stream of JSON lines).
 - **Exercise:** merge an NDJSON stream into one array; inject a shell variable with `--arg`.
 
-### Module 12 — Real-world recipes & capstone  `[ ]`
-- **Goal:** stitch it all together on realistic data (API responses, logs, config).
-- **Cover:** filter→reshape→aggregate→sort→top-N; group-and-count; flatten nested API payloads.
-- **Exercise (capstone):** given a sample API dump, produce a leaderboard-style summary in one pipeline.
+### Module 12 — kubectl capstone  `[ ]`
+- **Goal:** stitch it together on the user's real terrain.
+- **Exercise (capstone):** given a `kubectl get pods -o json`-style dump: filter by status/label with `select`+`test`, extract fields, group-and-count, top-N — one pipeline.
 
 ---
 
@@ -150,3 +141,4 @@ input values ──→ explode? (.[]) ──→ per-element filters ──→ co
 | 2026-07-27 | 4 | select/map/map_values (4a gate+stream-filter, 4b `map`==`[.[]|f]`, 4c values-in-place); N-vs-1 choice | Module 5 |
 | 2026-07-28 | 5 | Builtins: 5a length/keys/has, 5b add/flatten/range, 5c sort_by family, 5d group_by+count recipe, 5e entries family; big-picture pipeline diagram added | Module 6 |
 | 2026-07-28 | 6 | 6a comparisons/truthiness, 6b and/or/not, 6c if/elif, 6d `//` (+boolean trap), 6e `?`/try-catch. All core modules done | Module 7 (compressed) |
+| 2026-07-28 | 8a + trim | Assignment basics (`=`, `|=`, `+=`). Then trimmed course to real use (kubectl querying): parked 7, 8b, 10; 9 → one regex/strings bite; 12 → kubectl capstone | Module 9-lite |
