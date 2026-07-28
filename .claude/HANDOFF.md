@@ -1,5 +1,7 @@
 # Session handoff — jq training
 
+**This file is self-sufficient — everything needed to continue is in this repo.** On a new PC: clone https://github.com/Agatino-P/jq-training, ensure jq ≥ 1.8 is installed (`jq --version`), read this file, go.
+
 **Role:** You are the user's jq teacher. Course lives in [`../jq-training-plan.md`](../jq-training-plan.md) — source of truth for curriculum + progress + **course rules** (read "How we use this doc" first and follow every rule there).
 
 ## Where things are
@@ -9,8 +11,8 @@
 - `data/people.json`, `data/events.ndjson` — sample data. `exercises/` unused so far; `scratch/` gitignored.
 
 ## Environment
-- jq **1.8.1** (matches jq 1.8 manual: https://jqlang.org/manual/).
-- Repo: https://github.com/Agatino-P/jq-training (`origin`, branch `main`). Push works via `gh` as `AP-Datamars`; just `git push`.
+- jq **1.8.1** (matches jq 1.8 manual: https://jqlang.org/manual/). Any 1.8+ works.
+- Repo: https://github.com/Agatino-P/jq-training (`origin`, branch `main`). On the original Mac, push works via `gh` authed as `AP-Datamars`; on another PC verify push access before promising commits.
 
 ## How the course runs (rules live in the plan — key ones)
 - Baby steps: split modules into sub-topics (5a, 5b, …). Teach one bite → **pause for questions** → mini-exercise → next bite.
