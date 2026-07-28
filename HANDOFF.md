@@ -21,7 +21,6 @@
 - Update lessons.md + plan statuses + progress log per module; commit + push at module end.
 
 ## Status
-- Modules **0–5 done** (setup, core filters, stream model, building output, select/map/map_values, essential builtins).
-- **Next up: Module 6 — conditionals, comparisons & error handling** (`if/elif/else`, `and/or/not`, `//` defaults, `try/catch`, `?`). Already previewed: `if`-without-`else` = identity (cheatsheet), `?` suffix (Module 1).
-- Agreed: when reaching Modules 7 and 10, compress them to their useful 20% (user signed off).
+- Modules **0–6 done** — all ⭐ core modules complete except 11 (I/O & CLI flags).
+- **Next up: Module 7 — reduce & foreach, COMPRESSED** to its useful 20% (agreed): `reduce` properly, `foreach` only a taste. Module 10 also to be compressed when reached.
 - User is sharp — caught a real error (`if C then T end` defaults to `else .`, NOT empty). Both note files carry the correction.

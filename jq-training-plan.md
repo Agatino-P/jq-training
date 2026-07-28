@@ -83,7 +83,7 @@ input values ──→ explode? (.[]) ──→ per-element filters ──→ co
 - **Cover:** `length`, `keys`, `values`, `has`, `in`, `to_entries`/`from_entries`/`with_entries`, `add`, `group_by`, `unique`/`unique_by`, `sort`/`sort_by`, `min_by`/`max_by`, `flatten`, `range`.
 - **Exercise:** group an array of records by a field; sum a field with `map(.x) | add`.
 
-### Module 6 — Conditionals, comparisons & error handling  `[ ]`  ⭐ core
+### Module 6 — Conditionals, comparisons & error handling  `[x]`  ⭐ core
 - **Goal:** branching and the operators that make jq resilient to messy data.
 - **Manual:** Conditionals and Comparisons
 - **Cover:** `==` `!=` `<` `>`, `and`/`or`/`not`, `if a then b else c end` (and `elif`), the **alternative operator `//`** (default values), `try ... catch`, trailing `?`.
@@ -149,3 +149,4 @@ input values ──→ explode? (.[]) ──→ per-element filters ──→ co
 | 2026-07-27 | 3 | Building output (3a `{}` + shorthand, 3b `"\(.expr)"` interp, 3c `[]` + computed keys `{(.k):.v}`) | Module 4 |
 | 2026-07-27 | 4 | select/map/map_values (4a gate+stream-filter, 4b `map`==`[.[]|f]`, 4c values-in-place); N-vs-1 choice | Module 5 |
 | 2026-07-28 | 5 | Builtins: 5a length/keys/has, 5b add/flatten/range, 5c sort_by family, 5d group_by+count recipe, 5e entries family; big-picture pipeline diagram added | Module 6 |
+| 2026-07-28 | 6 | 6a comparisons/truthiness, 6b and/or/not, 6c if/elif, 6d `//` (+boolean trap), 6e `?`/try-catch. All core modules done | Module 7 (compressed) |

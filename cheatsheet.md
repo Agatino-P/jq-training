@@ -41,6 +41,34 @@ input values → explode? (.[]) → per-element filters → collect? ([ ]) → o
 ```
 Per-element work (`.field`, `select`, `"\(...)"`) needs no array. Enter array-land only for whole-collection ops (`sort_by`, `unique`, `group_by`, `add`, `length`, slices, top-N) — that's what `-s` (NDJSON→array) and `map` (stay in array-land) are for. Collect at the end only if the output should be one value.
 
+**Only `false` and `null` are falsy — `0`, `""`, `[]`, `{}` are truthy**
+```
+0 | if . then "yes" else "no" end    → "yes"     (JS/Python instinct says "no"!)
+select(.count)                       → does NOT skip zeros; say select(.count != 0)
+```
+
+**`not` is a filter, not an operator — pipe into it**
+```
+.vip | not                      → negated       (`not .vip` = syntax error)
+```
+
+**`//` swallows `false` — never default booleans with it**
+```
+{"muted":false} | .muted // true     → true !!   (real false "corrected" away)
+{"muted":false} | if has("muted") then .muted else true end   → false (right)
+```
+
+**ISO dates compare/sort as plain strings**
+```
+"2026-07-28" > "2026-01-01"     → true      (YYYY-MM-DD: alphabetical == chronological)
+```
+Works in `select`, `sort_by(.ts)`, `min/max_by` — no date parsing needed. Non-ISO formats sort garbage.
+
+**`? // ` — the resilient-access combo**
+```
+{} | (.a[]? // "none")          → "none"    (? : error→empty · // : empty→default)
+```
+
 **`if C then T end` (no else) defaults to `else .` — NOT `else empty`**
 ```
 40 | if . >= 50 then . end      → 40   (value passes through on false!)

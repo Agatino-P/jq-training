@@ -367,3 +367,77 @@ Inside `f`, `.` is one `{key, value}` pair — so keys are editable too (which `
 {"a":1,"b":25} | with_entries(select(.value > 10))   → {"b":25}
 ```
 Choosing: values only → `map_values(f)` (`.` = the value). Keys involved / pairs-as-data → entries family (`.` = the pair). Full `to_entries|map|from_entries` when you need array-land ops in the middle (sort pairs, dedupe…).
+
+---
+
+## Module 6 — Conditionals, comparisons & error handling ⭐
+
+**6a — comparisons & truthiness**
+```
+a == b   a != b   a < b   a <= b   a > b   a >= b      → true/false
+{"age":41} | .age > 40          → true
+```
+Work on any JSON type — no coercion ever (`1 == "1"` → false). Cross-type order = sort order: `null < false < true < numbers < strings < arrays < objects`. Strings compare alphabetically:
+```
+"2026-07-28" > "2026-01-01"     → true    (ISO dates: alphabetical == chronological)
+```
+Truthiness: **only `false` and `null` are falsy** — `0`, `""`, `[]`, `{}` are all TRUE:
+```
+[0,"",null,false,[],"x"] | [ .[] | select(.) ]   → [0,"",[],"x"]
+```
+So `select(.count)` does NOT skip zeros — say `select(.count != 0)`.
+
+**6b — `and` / `or` / `not`**
+```
+cond1 and cond2                 → true/false (truthiness rule above)
+{"age":41,"vip":true} | .age > 40 and .vip   → true
+```
+`and`/`or` return only true/false — they never hand back an operand (defaults are `//`'s job).
+```
+cond | not                      → negated — not is a FILTER, you pipe into it
+{"vip":false} | .vip | not      → true       (`not .vip` is a syntax error)
+```
+Comparisons bind tighter than `and`/`or`; parenthesize when in doubt.
+
+**6c — `if / elif / else`**
+```
+if C then A elif C2 then B else D end        → a VALUE (usable mid-pipeline)
+15 | if . < 10 then "small" elif . < 100 then "medium" else "big" end   → "medium"
+```
+`end` is mandatory. Omitted `else` = `else .` (identity, NOT empty) — to drop, write `else empty`.
+Inside object construction, parenthesize:
+```
+{"n":"kat","s":30} | {n, grade: (if .s >= 60 then "pass" else "fail" end)}   → {"n":"kat","grade":"fail"}
+```
+Merge variant for wide objects: `. + {grade: (if ... end)}`. In practice `select` covers filtering and `//` covers defaults — `if` earns its keep for labeling/bucketing.
+
+**6d — `//` alternative (default) operator**
+```
+a // b                          → a, unless a yields no values / only null/false → b
+{} | .name // "unknown"         → "unknown"    (missing key → null → default)
+```
+Chain fallbacks:
+```
+[{"nick":"kat"},{"name":"ada"},{}] | map(.nick // .name // "anon")   → ["kat","ada","anon"]
+```
+Gotchas:
+- `false` triggers the fallback → NEVER default booleans with `//`: `{"muted":false} | .muted // true` → `true` (real false "corrected" away!). Use `if has("muted") then .muted else true end`.
+- `//` also fills in for *empty*, pairing perfectly with `?`:
+```
+{} | (.a[]? // "none")          → "none"   (? turns the error into empty, // fills the gap)
+```
+
+**6e — errors: `?` and `try/catch`**
+
+Some ops ERROR (crash) rather than return null: iterating null, indexing a string/number, bad arithmetic. Field access `.name` is only defined on objects (and null → null); on `42` it's a type error.
+```
+EXPR?                           → EXPR, or empty if it errors ("skip the failures")
+[{"name":"ada"},42] | .[].name?      → "ada"
+```
+```
+try EXPR catch HANDLER          → EXPR, or HANDLER(error-message-string)
+[{"name":"ada"},42] | .[] | try .name catch "bad-record"   → "ada"  "bad-record"
+```
+`try EXPR` alone ≡ `EXPR?`. Inside `catch`, `.` = the error message: `catch "oops: \(.)"`.
+Choosing on a dirty stream: `?` = drop bad records silently · `try/catch` = replace them (keep row count / log why) · naked = fail loudly (right when an error means your assumption broke).
+Scope: `?` guards the whole postfix chain it ends (`.a.b[]?`); `try` guards exactly what you give it.
