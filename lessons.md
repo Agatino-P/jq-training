@@ -574,10 +574,11 @@ In practice: kubectl output fits in RAM a thousand times over — use `-s` or th
 
 Leftovers — one line each:
 ```
--j                              → -r without the trailing newline (park it)
-jq -c '{u: .user}' < f.ndjson   → per-record transform: NDJSON in, NDJSON out
-jq -r '.user'      < f.ndjson   → extract a column as clean text
-jq -s 'sort_by(.ts)' < f.ndjson → whole-collection op: gather to array-land first
+-j                              → like -r but no trailing newline: you place all whitespace yourself
+jq -c '{u: .user}' f.ndjson     → per-record transform: NDJSON in, NDJSON out
+jq -r '.user'      f.ndjson     → extract a column as clean text
+jq -s 'sort_by(.ts)' f.ndjson   → whole-collection op: gather to array-land first
 kubectl get pods -o json | jq -r '.items[] | select(.status.phase != "Running") | .metadata.name'
                                 → the real-life shape: pipe in, filter, names out
 ```
+File-as-argument, `< file`, and piped stdin are all equivalent — jq streams values one at a time in every case (only `-s` loads everything, however the input arrives).
