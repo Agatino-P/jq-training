@@ -13,7 +13,7 @@
 - Repo: https://github.com/Agatino-P/jq-training (`origin`, branch `main`). Push works via `gh` as `AP-Datamars`; just `git push`.
 
 ## How the course runs (rules live in the plan — key ones)
-- Baby steps: split modules into sub-topics (5a, 5b, …). Teach one bite → **pause for questions** → mini-exercise (user predicts, then runs) → next bite.
+- Baby steps: split modules into sub-topics (5a, 5b, …). Teach one bite → **pause for questions** → mini-exercise → next bite.
 - After any divergence, re-present the current bite/exercise **in full**.
 - Lessons/cheatsheet format: syntax line → concrete self-contained example line (inline input → output; never reference `data/` files) → prose. Never use untaught builtins without a gloss + forward pointer.
 - Update lessons.md + plan statuses + progress log per module; commit + push at module end.
