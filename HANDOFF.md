@@ -23,5 +23,6 @@
 ## Status
 - Modules **0–6 done**, plus **8a** (assignment basics).
 - **Course trimmed 2026-07-28 to the user's real use** — filter/reshape/grep kubectl JSON output, read-only. Parked: 7 (reduce), 8b (deep-path editing), 10 (functions/recursion; `..` is on the cheatsheet). See plan for details.
-- **9-lite done.** Remaining (one short session): **Module 11** (I/O & CLI flags ⭐: `--arg`, `-n inputs`, NDJSON, `-r`) → **Module 12** (kubectl-style capstone).
+- **9-lite and 11 done.** Remaining: **Module 12 only** — the kubectl-style capstone (one exercise session: filter by status/label with select+test, extract fields, group-and-count, top-N, one pipeline). Then course complete.
+- Teaching note: no Java analogies in explanations (user vetoed); explain mechanisms (e.g. the input read-cursor), not just rules.
 - User is sharp — caught a real error (`if C then T end` defaults to `else .`, NOT empty). Both note files carry the correction.

@@ -509,3 +509,67 @@ string | startswith("s")        → true/false
 Prefer over `test` for plain prefix/suffix — nothing to escape, no dot surprises.
 
 **Parked:** `capture("(?<n>re)")` pulls named groups into an object — `"v1.29" | capture("v(?<maj>\\d+)\\.(?<min>\\d+)")` → `{"maj":"1","min":"29"}`. Learn on demand; also `sub`/`gsub` (replace), `match` internals, trim fns.
+
+---
+
+## Module 11 — I/O & CLI: shell values in, streaming input
+
+**11a — `--arg` / `--argjson`: shell values in**
+
+Never splice shell vars into the program string (`jq ".x == \"$V\""` — quoting hell, breaks on weird values). Bind them:
+```
+jq --arg name value 'PROGRAM'        → $name inside, always a STRING
+NS=web;  echo '[{"ns":"web"},{"ns":"ops"}]' | jq --arg ns "$NS" '.[] | select(.ns == $ns)'   → {"ns":"web"}
+```
+```
+jq --argjson name value 'PROGRAM'    → $name parsed as JSON (numbers, booleans, structures)
+echo '[{"q":1},{"q":5}]' | jq --argjson min 3 '.[] | select(.q >= $min)'   → {"q":5}
+```
+Trap: `--arg min 3` makes `$min` the STRING "3"; numbers sort before strings, so `.q >= "3"` is false for every number — **no error, just no output**. Numbers/bools → `--argjson`, always.
+`env.HOME` / `$ENV.HOME` read environment variables directly — fine in one-liners; `--arg` is cleaner in scripts.
+
+**11b — `-n` + `inputs`: manual control of input reading**
+
+The machine underneath: **one read-cursor** over the input; jq's default outer loop is
+```
+while (read next top-level value into .):    # advances the cursor
+    run YOUR_PROGRAM
+```
+— which is why programs run once per input value.
+
+`-n` — switch the auto-read OFF:
+```
+jq -n 'PROGRAM'                 → program runs exactly ONCE; . = null; cursor untouched
+jq -n '2 + 2'                   → 4        (generator mode)
+```
+("null input" names the side effect; the point is: no automatic reading.)
+
+`inputs` — the manual read:
+```
+inputs                          → stream of the not-yet-read TOP-LEVEL input values (ignores .)
+echo '{"a":1} {"a":2}' | jq -n 'inputs'      → {"a":1}  {"a":2}
+```
+Pulls from the cursor lazily — one document parsed per pull — and yields **whole top-level documents**, never descending into them:
+```
+echo '[{"a":1},{"a":2}]' | jq -n 'inputs'    → [{"a":1},{"a":2}]   (ONE value: the array itself)
+```
+Division of labor: `inputs` = remaining *documents*, from disk, lazily · `.[]` = elements *inside* one in-memory value.
+
+Why `-n` and `inputs` travel together — trace the cursor:
+```
+echo '1 2 3' | jq 'inputs'      → 2  3     (loop pre-read 1 into . ; never used → unprinted)
+echo '1 2 3' | jq -n 'inputs'   → 1  2  3  (auto-read off → cursor still at 1)
+```
+The 1 isn't "lost" — it sits unused in `.` ; `jq '., inputs'` → `1 2 3` proves it.
+
+The payoff — memory. Same job (count records), three costs:
+```
+jq -s 'length'                             # load ALL into RAM, then count
+jq -n '[inputs] | length'                  # IDENTICAL memory — [ ] re-collects; -s in a wig
+jq -n 'reduce inputs as $r (0; . + 1)'     # streaming: RAM = 1 record + counter → eats 10 GB
+```
+Rule: `inputs` stays cheap only feeding a **stream consumer** (`reduce`, `first(...)` which stops early, a per-record filter). Wrapping it in `[ ]` rebuilds `-s`.
+
+In practice: kubectl output fits in RAM a thousand times over — use `-s` or the default loop; remember `inputs`+`reduce` exists for the day a multi-GB log doesn't.
+
+Leftovers, one line each: `-j` = `-r` without the trailing newline (park). Shell-glue shapes: `jq -c` per-record NDJSON→NDJSON · `jq -r '.f'` column out · `jq -s 'sort_by(.ts)'` array-land op · `kubectl get pods -o json | jq -r '.items[] | select(...) | .metadata.name'`.

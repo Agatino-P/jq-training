@@ -105,7 +105,7 @@ input values ──→ explode? (.[]) ──→ per-element filters ──→ co
 ### Module 10 — Variables, functions & recursion  `[parked]`
 - Cut 2026-07-28: not needed for read-only querying. `..` (recursive descent) gets a cheatsheet entry; `as $x` was previewed in Module 7's syntax. `def` et al: revisit if reusable filters ever matter.
 
-### Module 11 — I/O & the CLI flags that matter  `[ ]`  ⭐ core
+### Module 11 — I/O & the CLI flags that matter  `[x]`  ⭐ core
 - **Goal:** wire jq into real pipelines: multiple inputs, slurping, passing shell vars, NDJSON.
 - **Manual:** I/O + Invoking jq
 - **Cover:** `-s` slurp, `-n` + `inputs`, `--arg`/`--argjson`, `$ENV`/`env`, `-r`/`-j`, handling NDJSON (stream of JSON lines).
@@ -143,3 +143,4 @@ input values ──→ explode? (.[]) ──→ per-element filters ──→ co
 | 2026-07-28 | 6 | 6a comparisons/truthiness, 6b and/or/not, 6c if/elif, 6d `//` (+boolean trap), 6e `?`/try-catch. All core modules done | Module 7 (compressed) |
 | 2026-07-28 | 8a + trim | Assignment basics (`=`, `|=`, `+=`). Then trimmed course to real use (kubectl querying): parked 7, 8b, 10; 9 → one regex/strings bite; 12 → kubectl capstone | Module 9-lite |
 | 2026-07-28 | 9-lite | test-in-select grep move, split/join, startswith/endswith (preferred over regex for prefixes); capture parked | Module 11 |
+| 2026-07-28 | 11 + audit | 11a --arg/--argjson (+string-compare trap), 11b cursor model / -n / inputs / streaming-vs-collect. Independent agent verified all md (87 examples): fixed ?-scope claim, capture output, not-wording, handoff link | Module 12 capstone |
