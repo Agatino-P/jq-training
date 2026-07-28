@@ -311,7 +311,12 @@ array | sort_by(f)              → sorted by computed key
 array | unique                  → sorted + deduped
 [3,1,2,3,1] | unique            → [1,2,3]
 ```
-`unique_by(f)` dedupes by computed key, keeps one representative each.
+```
+array | unique_by(f)            → sorted by f, ONE element per distinct f-value
+[{"n":"kat","t":"b"},{"n":"ada","t":"a"},{"n":"alan","t":"a"}] | unique_by(.t)
+                                → [{"n":"ada","t":"a"},{"n":"kat","t":"b"}]
+```
+Keeps the *first* (input order) of each key — silent data loss; want the groups? use `group_by`.
 
 **5c — `min_by(f)` / `max_by(f)`**
 ```
@@ -320,4 +325,45 @@ array | max_by(f)               → the ONE element with the largest key
 ```
 Plain `min`/`max` for arrays of scalars.
 
-Family pattern: `sort_by` / `unique_by` / `min_by` / `max_by` (and `group_by`) all apply `f` to each element and use the result as the comparison key. Learn one, learned all.
+Family pattern: `sort_by` / `unique_by` / `min_by` / `max_by` / `group_by` all apply `f` to each element and use the result as the comparison key. Learn one, learned all. They *select and arrange* original elements, never transform them — transforming is `map`'s job. Prefer `max_by(.s).n` over sort-descending-take-first; the sort form is for **top N**: `sort_by(-.s) | .[0:3]`.
+
+**5d — `group_by(f)`**
+```
+array | group_by(f)             → array of ARRAYS, one per distinct f-value (sorted by f)
+[{"t":"a","n":1},{"t":"b","n":2},{"t":"a","n":3}] | group_by(.t)
+                                → [ [{"t":"a","n":1},{"t":"a","n":3}], [{"t":"b","n":2}] ]
+```
+Inner arrays hold the **original elements, whole and unchanged** — only the nesting changed. No key label is added: recover the key from any member (`.[0].t`).
+The group-and-count recipe (used weekly):
+```
+group_by(f) | map({key: .[0].f, aggregate})
+[{"u":"ada"},{"u":"kat"},{"u":"ada"}] | group_by(.u) | map({user: .[0].u, count: length})
+                                → [{"user":"ada","count":2},{"user":"kat","count":1}]
+```
+Inside the `map`, `.` is one group (a plain array of originals): `.[0].u` = the key, `length` = size, `map(.x)|add` = sum.
+
+**5e — `to_entries` / `from_entries` / `with_entries`**
+
+`.[]` on an object drops keys; the entries family keeps them as data.
+```
+object | to_entries             → array of {key, value} pairs
+{"a":1,"b":2} | to_entries      → [{"key":"a","value":1},{"key":"b","value":2}]
+```
+```
+pairs | from_entries            → object (inverse; also accepts name/k/v)
+[{"key":"a","value":1}] | from_entries   → {"a":1}
+```
+```
+object | with_entries(f)        == to_entries | map(f) | from_entries
+{"a":1,"b":2} | with_entries(.value += 10)   → {"a":11,"b":12}
+```
+Inside `f`, `.` is one `{key, value}` pair — so keys are editable too (which `map_values` can't):
+```
+{"a":1,"b":2} | with_entries(.key |= ascii_upcase)   → {"A":1,"B":2}
+```
+(`|=` = update-in-place, Module 8; `ascii_upcase` = uppercase, Module 9.)
+`select` inside drops the pair (same empty-deletes rule as 4c):
+```
+{"a":1,"b":25} | with_entries(select(.value > 10))   → {"b":25}
+```
+Choosing: values only → `map_values(f)` (`.` = the value). Keys involved / pairs-as-data → entries family (`.` = the pair). Full `to_entries|map|from_entries` when you need array-land ops in the middle (sort pairs, dedupe…).

@@ -77,7 +77,7 @@ input values ──→ explode? (.[]) ──→ per-element filters ──→ co
 - **Cover:** `select(cond)`, `map(f)`, `map_values(f)`, and why `map(f)` == `[.[] | f]`.
 - **Exercise:** keep only objects where `.active == true`; double every number in an array.
 
-### Module 5 — Essential builtins  `[ ]`  ⭐ core
+### Module 5 — Essential builtins  `[x]`  ⭐ core
 - **Goal:** the ~15 builtins you'll actually reach for.
 - **Manual:** Builtin functions
 - **Cover:** `length`, `keys`, `values`, `has`, `in`, `to_entries`/`from_entries`/`with_entries`, `add`, `group_by`, `unique`/`unique_by`, `sort`/`sort_by`, `min_by`/`max_by`, `flatten`, `range`.
@@ -148,3 +148,4 @@ input values ──→ explode? (.[]) ──→ per-element filters ──→ co
 | 2026-07-27 | 2 | Stream model (2a explode `.[]`, 2b pipe = per-value, 2c `[ ]` collect N→1); explode→transform→collect idiom | Module 3 |
 | 2026-07-27 | 3 | Building output (3a `{}` + shorthand, 3b `"\(.expr)"` interp, 3c `[]` + computed keys `{(.k):.v}`) | Module 4 |
 | 2026-07-27 | 4 | select/map/map_values (4a gate+stream-filter, 4b `map`==`[.[]|f]`, 4c values-in-place); N-vs-1 choice | Module 5 |
+| 2026-07-28 | 5 | Builtins: 5a length/keys/has, 5b add/flatten/range, 5c sort_by family, 5d group_by+count recipe, 5e entries family; big-picture pipeline diagram added | Module 6 |
